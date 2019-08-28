@@ -41,7 +41,7 @@ module.exports = function(RED) {
             done();
         });
     }
-    RED.nodes.registerType("Firebirddatabase",FirebirdNode, {
+    RED.nodes.registerType("firebird-database",FirebirdNode, {
         credentials: {
             user: {type: "text"},
             password: {type: "password"}
@@ -82,5 +82,5 @@ module.exports = function(RED) {
             this.error("Firebird database not configured");
         }
     }
-    RED.nodes.registerType("firebird",FirebirdDBNodeIn);
+    RED.nodes.registerType("firebird-db",FirebirdDBNodeIn);
 }

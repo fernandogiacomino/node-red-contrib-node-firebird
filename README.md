@@ -1,5 +1,8 @@
-node-red-node-firebird
+node-red-contrib-node-firebird
 ========================
+
+This is a fork of [node-red-node-firebird](https://github.com/phantom21/node-red-node-firebird)
+
 A <a href="http://nodered.org" target="_new">Node-RED</a> node to read and write to a Firebird database.
 
 Install
@@ -7,7 +10,7 @@ Install
 
 Run the following command in your Node-RED user directory - typically `~/.node-red`
 
-    npm install node-red-node-firebird
+    npm install node-red-contrib-node-firebird
 
 
 Usage

@@ -1,5 +1,5 @@
 {
-    "firebird" : {
+    "firebird-db" : {
         "label": {
             "database": "База данных",
             "host": "Хост",
