@@ -26,14 +26,31 @@ module.exports = function(RED) {
                    done(err,result);
                    return;
                }
-               db.query(query, function(err,result) {
+               db.transaction(firebirddb.ISOLATION_READ_UNCOMMITTED, function(err, transaction) {
                    if (err) {
                        node.error(err);
                        done(err,result);
                    }
-                   db.detach();
-                   done(err,result);
-               })
+                   transaction.query(query, function(err,result) {
+                       if (err) {
+                           transaction.rollback();
+                           node.error(err);
+                           done(err,result);
+                           return;
+                       }
+                       transaction.commit(function(err) {
+                           if (err) {
+                               transaction.rollback();
+                               node.error(err);
+                               done(err,result);
+                           }
+                           else {
+                               db.detach();
+                           }
+                           done(err,result);
+                        });
+                    });
+                });
             });
         }
 
