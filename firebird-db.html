@@ -47,6 +47,13 @@
         <input type="text" id="node-input-firebirddb">
     </div>
     <div class="form-row">
+        <label for="node-input-requesttype"><i class="fa fa-quote-left"></i> <span data-i18n="firebird-db.label.requesttype"></span></label>
+        <select id="node-input-requesttype" style="width:70%;">
+            <option value="query" data-i18n="firebird-db.requesttype.query"></option>
+            <option value="transaction" data-i18n="firebird-db.requesttype.transaction"></option>
+        </select>
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="firebird-db.label.name"></span></label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
@@ -68,6 +75,7 @@
         color:"#fba70f",
         defaults: {
             firebirddb: {type:"firebird-database",required:true},
+            requesttype: {value:"query",required:true},
             name: {value:""}
         },
         inputs:1,

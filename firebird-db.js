@@ -10,7 +10,7 @@ module.exports = function(RED) {
         this.port = n.port;
         this.dbname = n.db;
         var node = this;
-        this.query=function(query, done){
+        this.query=function(query, requesttype, done){
             var result=null;
             firebirddb.attach({
                 host: node.host,
@@ -26,31 +26,50 @@ module.exports = function(RED) {
                    done(err,result);
                    return;
                }
-               db.transaction(firebirddb.ISOLATION_READ_UNCOMMITTED, function(err, transaction) {
-                   if (err) {
-                       node.error(err);
-                       done(err,result);
-                   }
-                   transaction.query(query, function(err,result) {
+               
+               if (requesttype === 'transaction') {
+                   
+                   db.transaction(firebirddb.ISOLATION_READ_UNCOMMITTED, function(err, transaction) {
                        if (err) {
-                           transaction.rollback();
+                           db.detach()
                            node.error(err);
                            done(err,result);
                            return;
                        }
-                       transaction.commit(function(err) {
+                       transaction.query(query, function(err,result) {
                            if (err) {
                                transaction.rollback();
+                               db.detach();
                                node.error(err);
                                done(err,result);
+                               return;
                            }
-                           else {
-                               db.detach();
-                           }
-                           done(err,result);
+                           transaction.commit(function(err) {
+                               if (err) {
+                                   transaction.rollback();
+                                   db.detach();
+                                   node.error(err);
+                               }
+                               else {
+                                   db.detach();
+                               }
+                               done(err,result);
+                            });
                         });
                     });
-                });
+                    
+               } else {
+                   
+                   db.query(query, function(err,result) {
+                       if (err) {
+                           node.error(err);
+                       }
+                       db.detach();
+                       done(err,result);
+                   });
+                   
+               }
+                
             });
         }
 
@@ -69,6 +88,7 @@ module.exports = function(RED) {
     function FirebirdDBNodeIn(n) {
         RED.nodes.createNode(this,n);
         this.firebirddb = n.firebirddb;
+        this.requesttype = n.requesttype;
         this.firebirddbConfig = RED.nodes.getNode(this.firebirddb);
 
         if (this.firebirddbConfig) {
@@ -78,7 +98,7 @@ module.exports = function(RED) {
             if (typeof msg.topic === 'string') {
                 //console.log("query:",msg.topic);
                 var bind = Array.isArray(msg.payload) ? msg.payload : [];
-                node.firebirddbConfig.query(msg.topic, function(err, rows) {
+                node.firebirddbConfig.query(msg.topic, node.requesttype, function(err, rows) {
                     if (err) {
                         node.error(err,msg);
                         node.status({fill:"red",shape:"ring",text:"Error"});

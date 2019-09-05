@@ -6,7 +6,12 @@
             "port": "Порт",
             "user": "Логин",
             "password": "Пароль",
-            "name": "Название"
+            "name": "Название",
+            "requesttype": "Тип запроса"
+        },
+        "requesttype": {
+            "query": "Единичный запрос",
+            "transaction": "Транзакция"
         }
     }
 }

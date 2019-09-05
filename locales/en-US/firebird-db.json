@@ -6,7 +6,12 @@
             "port": "Port",
             "user": "User",
             "password": "Password",
-            "name": "Name"
+            "name": "Name",
+            "requesttype": "Query type"
+        },
+        "requesttype": {
+            "query": "Simple query",
+            "transaction": "Transaction"
         }
     }
 }
