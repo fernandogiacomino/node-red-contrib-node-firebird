@@ -22,9 +22,12 @@ This node uses the <b>query</b> operation against the configured database. This 
 
 By it's very nature it allows SQL injection... so <i>be careful out there...</i>
 
-The `msg.topic` must hold the <i>query</i> for the database, and the result is returned in `msg.payload`.
+For <b>Query type</b> = <b>Simple query</b>:
+    The `msg.topic` must hold the <i>query</i> for the database, and the result is returned in `msg.payload`.
+    
+For <b>Query type</b> = <b>Transaction</b>:
+    The `msg.topic` may hold the <i>array of queries</i> in one string, divided by ";" or the <i>simple query</i>. The result for the <b>last querry</b> is returned in `msg.payload`.
 
 Typically the returned payload will be an array of the result rows.
 
 If nothing is found for the key then <i>null</i> is returned.
-

@@ -29,6 +29,9 @@ module.exports = function(RED) {
                
                if (requesttype === 'transaction') {
                    
+                   query.trim();
+                   let query_array = query.endsWith(';') ? query.slice(0,-1).split(';') : query.split(';');
+                   
                    db.transaction(firebirddb.ISOLATION_READ_UNCOMMITTED, function(err, transaction) {
                        if (err) {
                            db.detach()
@@ -36,28 +39,30 @@ module.exports = function(RED) {
                            done(err,result);
                            return;
                        }
-                       transaction.query(query, function(err,result) {
+                       function transaction_query_callback(err, result) {
                            if (err) {
                                transaction.rollback();
                                db.detach();
                                node.error(err);
                                done(err,result);
-                               return;
+                           } else if (query_array.length > 0) {
+                               transaction.query(query_array.shift(), transaction_query_callback);
+                           } else {
+                               transaction.commit(function(err) {
+                                   if (err) {
+                                       transaction.rollback();
+                                       db.detach();
+                                       node.error(err);
+                                   } else {
+                                       db.detach();
+                                   }
+                                   done(err,result);
+                               });
                            }
-                           transaction.commit(function(err) {
-                               if (err) {
-                                   transaction.rollback();
-                                   db.detach();
-                                   node.error(err);
-                               }
-                               else {
-                                   db.detach();
-                               }
-                               done(err,result);
-                            });
-                        });
-                    });
-                    
+                       }
+                       transaction.query(query_array.shift(), transaction_query_callback);
+                   });
+                   
                } else {
                    
                    db.query(query, function(err,result) {
