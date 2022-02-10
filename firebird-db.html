@@ -51,6 +51,7 @@
         <select id="node-input-requesttype" style="width:70%;">
             <option value="query" data-i18n="firebird-db.requesttype.query"></option>
             <option value="transaction" data-i18n="firebird-db.requesttype.transaction"></option>
+            <option value="transaction" data-i18n="firebird-db.requesttype.subscription"></option>
         </select>
     </div>
     <div class="form-row">
@@ -62,7 +63,8 @@
 <script type="text/x-red" data-help-name="firebird-db">
     <p>Allows basic access to a Firebird database.</p>
     <p>This node uses the <b>query</b> operation against the configured database. This does allow both INSERTS and DELETES.
-    By its very nature it allows SQL injection... so <i>be careful out there...</i></p>
+    By its very nature it allows SQL injection... so <i>be careful out there...</i></p><br>
+    <p>The request type <b>subscription</b> allows to the client to receive Firebird event notifications.</p>
     <p>For <b>Query type</b> = <b>Simple query</b>: The <code>msg.topic</code> must hold the <i>query</i> for the database, and the result is returned in <code>msg.payload</code>.</p>
     <p>For <b>Query type</b> = <b>Transaction</b>: The <code>msg.topic</code> may hold the <i>array of queries</i> in one string, divided by ";" or the <i>simple query</i>. The result for the <b>last querry</b> is returned in <code>msg.payload</code>.</p>
     <p>Typically the returned payload will be an array of the result rows.</p>
