@@ -63,8 +63,93 @@ module.exports = function(RED) {
                        transaction.query(query_array.shift(), transaction_query_callback);
                    });
                    
-               } else {
+               } else 
+               if (requesttype === 'subscription') {
                    
+                   ////////
+                   Firebird.attach(options, function(err, db) {
+
+    if (err)
+        throw err;
+
+    db.on('row', function(row, index, isObject) {
+        // index === Number
+        // isObject === is row object or array?
+    });
+
+    db.on('result', function(result) {
+        // result === Array
+    });
+
+    db.on('attach', function() {
+
+    });
+
+    db.on('detach', function(isPoolConnection) {
+        // isPoolConnection == Boolean
+    });
+
+    db.on('reconnect', function() {
+
+    });
+
+    db.on('error', function(err) {
+
+    });
+
+    db.on('transaction', function(isolation) {
+        // isolation === Number
+    });
+
+    db.on('commit', function() {
+
+    });
+
+    db.on('rollback', function() {
+
+    });
+
+    db.detach();
+});
+                   //////////
+                   
+                   
+                   query.trim();
+                   let query_array = query.endsWith(';') ? query.slice(0,-1).split(';') : query.split(';');
+                   
+                   db.transaction(firebirddb.ISOLATION_READ_UNCOMMITTED, function(err, transaction) {
+                       if (err) {
+                           db.detach()
+                           node.error(err);
+                           done(err,result);
+                           return;
+                       }
+                       function transaction_query_callback(err, result) {
+                           if (err) {
+                               transaction.rollback();
+                               db.detach();
+                               node.error(err);
+                               done(err,result);
+                           } else if (query_array.length > 0) {
+                               transaction.query(query_array.shift(), transaction_query_callback);
+                           } else {
+                               transaction.commit(function(err) {
+                                   if (err) {
+                                       transaction.rollback();
+                                       db.detach();
+                                       node.error(err);
+                                   } else {
+                                       db.detach();
+                                   }
+                                   done(err,result);
+                               });
+                           }
+                       }
+                       transaction.query(query_array.shift(), transaction_query_callback);
+                   });
+                   
+               } else 
+               {    
                    db.query(query, function(err,result) {
                        if (err) {
                            node.error(err);
